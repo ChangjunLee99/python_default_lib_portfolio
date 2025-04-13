@@ -1,0 +1,99 @@
+{
+    "DEFAULT":{
+        "TEXT":{
+            "MODEL_NAME" : "mistral",
+            "CLIENT_TYPE": "OLLAMA"
+        },
+        "VISION":{
+            "MODEL_NAME" : "llama3.2-vision",
+            "CLIENT_TYPE": "OLLAMA"
+        }
+    },
+	"CONN_KEYS":{
+		"OLLAMA":["address"],
+		"OPENAI":[""],
+		"GEMINI":["","",""]
+	},
+	"MODELS":[
+		{
+			"MODEL_NAME":"gemini-pro",
+			"CLIENT_TYPE":"GEMINI",
+			"CAPABILITY":["TEXT"]
+		},
+		{
+			"MODEL_NAME":"gemini-1.5-flash",
+			"CLIENT_TYPE":"GEMINI",
+			"CAPABILITY":["VISION"]
+		},
+		{
+			"MODEL_NAME":"gpt-4o-mini",
+			"CLIENT_TYPE":"OPENAI",
+			"CAPABILITY":["TEXT"]
+		},
+		{
+			"MODEL_NAME":"gpt-4o",
+			"CLIENT_TYPE":"OPENAI",
+			"CAPABILITY":["TEXT"]
+		},
+		{
+			"MODEL_NAME":"mistral",
+			"CLIENT_TYPE":"OLLAMA",
+			"CAPABILITY":["TEXT"]
+		},
+		{
+			"MODEL_NAME":"llama3.2:3b",
+			"CLIENT_TYPE":"OLLAMA",
+			"CAPABILITY":["TEXT"]
+		},
+		{
+			"MODEL_NAME":"llama3.2-vision",
+			"CLIENT_TYPE":"OLLAMA",
+			"CAPABILITY":["VISION"]
+		}
+	],
+    "PROMPTS":{ "BASE":" ",
+        "OLLAMA":{ "BASE":" ",
+            "mistral":{
+                "TEXT":{ "BASE":" ",
+                    "llm_summary_text":"아래 내용을 요약해줘. "
+                }
+            },            
+            "llama3.2:3b":{
+                "TEXT":{ "BASE":" ",
+                    "llm_summary_text":"아래 내용을 요약해줘. "
+                }
+            },
+            "llama3.2-vision":{
+                "VISION":{ "BASE":" ",
+                    "llm_summary_image":"이미지를 자세하게 설명해줘."
+                }
+            }
+        },
+        "OPENAI":{ "BASE":" ",
+            "gpt-4o":{
+                "TEXT":{ "BASE":" ",
+                    "llm_summary_text":"아래 내용을 요약해줘. "
+                }
+            },
+            "gpt-4o-mini":{
+                "TEXT":{ "BASE":" ",
+                    "llm_summary_text":"아래 내용을 요약해줘. "
+                }
+            }
+        },
+        "GEMINI":{ "BASE":" ",
+            "TEXT":{ "BASE":" ",
+                "llm_summary_text":"아래 내용을 요약해줘. "
+            }
+        }
+    },
+    "CAPABILITY_TO_ATYPE":{
+        "TEXT" : [
+            "llm_summary_text"
+        ],
+        "VISION": [
+            "llm_summary_image"
+        ]
+
+    }
+}

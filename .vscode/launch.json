@@ -1,0 +1,19 @@
+{
+"configurations": [
+
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+                         "args": [
+                "--logConfPath", "D:/develop/python_default_lib/conf/logger.json",
+                "--LLMConfPath", "D:/develop/python_default_lib/conf/aiconf.json",
+                "--DB_PATH", "D:/develop/python_default_lib/chromadb"
+
+             ]
+        }
+    ]
+}
