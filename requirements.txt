@@ -1,0 +1,40 @@
+pymysql==1.0.2
+pyperclip==1.9.0
+requests==2.32.3
+# filesystem control helper
+Werkzeug==2.2.2
+
+# .py to .exe
+pyinstaller==6.11.0
+
+tf-keras==2.18.0
+TensorFlow==2.18.0
+transformers==4.43.2
+
+psutil==5.9.0
+
+flask
+
+# gemini
+google==3.0.0
+google-generativeai==0.7.2
+
+
+elasticsearch==8.16.0
+
+# ollama
+ollama
+
+langchain_community
+langchain_openai
+chromadb
+transformers
+langchain
+langchain_core
+TensorFlow
+langchain_huggingface
+peft
+datasets
+accelerate
+bitsandbytes
+trl
