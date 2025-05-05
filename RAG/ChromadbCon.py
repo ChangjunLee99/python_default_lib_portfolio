@@ -18,34 +18,51 @@ class ChromadbCon:
         self.DB_PATH = None
         if self.m_util.get("DB_PATH")  != None:
             self.DB_PATH = self.m_util.getValueStr("DB_PATH")
+        else:
+            self.DB_PATH = self.m_util.getNowDir() + self.m_util.getDirSep() + "DB" 
         self.m_vdb :Chroma= None
+        self.m_vdb_dict : dict[str,Chroma] = {}
         self.m_sentence_transformer = sentence_transformer
         self.m_tokenizer = tokenizer
 
-    def makeDB(self):
+    def makeDB(self,name : str='default'):
         '''DB 생성'''
         return Chroma(
-                collection_name = 'esg',
-                embedding_function=self.m_sentence_transformer,
-                persist_directory=self.DB_PATH + self.m_util.getDirSep()+"test",
-                collection_metadata = {'hnsw:space': 'cosine'}
-            )
-    def loadDB(self):
+            collection_name = 'name',
+            embedding_function=self.m_sentence_transformer,
+            persist_directory=self.DB_PATH + self.m_util.getDirSep()+"test",
+            collection_metadata = {'hnsw:space': 'cosine'}
+        )
+    def loadDB(self,name : str='default'):
         '''DB 로드'''
-        self.m_vdb = self.makeDB()
+        if name not in self.m_vdb_dict.keys():
+            self.m_vdb_dict[name] = self.makeDB(name)
+    
+    def getDB(self,name : str='default'):
+        '''DB 가져오기'''
+        if name not in self.m_vdb_dict.keys():
+            self.m_vdb_dict[name] = self.makeDB(name)
+        return self.m_vdb_dict[name]
 
-    def persist(self):
+    def persist(self,name : str=None):
         '''현재 프로세서가 사용하는 DB 저장'''
-        if self.m_vdb is not None:
-            rep = 10
-            for i in range(rep):
-            
-                if not self.m_vdb.persist():
-                    self.m_util.logErr(f"persist failed {str(i)}")
-                else:
-                    break
+        for now_name in self.m_vdb_dict.keys():
+            if name != None and now_name != name:
+                pass
+            else:
+                self.m_vdb_dict[now_name].persist()
 
-    def add_Documents(self, documents):
+    def add_texts(self, name,texts,metadatas):
+        for i in range(3):  
+            try:
+                self.m_vdb_dict[name].add_texts(texts,metadatas)
+                return True
+            except:
+                self.m_util.logErr("chromadbCon::add_texts add_texts failed")
+        return False
+        
+
+    def add_Documents(self, name,documents):
         tlist = []
         metalist = []
         for document in documents: 
@@ -56,23 +73,16 @@ class ChromadbCon:
             if tokensize > self.getMaxTokenSizeFromST():
                 self.m_util.logErr("최대 토큰 수 초과, tokenSize:",tokensize)
             metalist.append(document.metadata)
-        isSucceed = False
         
         tsize = len(tlist)
-        for i in range(3):
-            try:
-                self.m_vdb.add_texts(texts=tlist,metadatas = metalist)
-                isSucceed = True
-                break
-            except :
-                self.m_util.logErr("chromadbCon::add_Documents add_texts failed")
-        if isSucceed == False:
+        ret = self.add_texts(name,tlist,metalist)
+        if ret == False:
             return 0
         self.m_util.logErr("chromadbCon::add_Documents adding document data Done")
 
         return tsize
     
-    def add_PDF_From_Local_Dir(self, path):
+    def add_PDF_From_Local_Dir(self, name, path):
         '''로컬 경로의 PDF 문서 입력'''
         if self.m_vdb == None:
             self.m_vdb = self.makeDB()
@@ -98,7 +108,10 @@ class ChromadbCon:
                 print("최대 토큰 수 초과, tokenSize:",tokensize)
             metalist.append(document.metadata)
         tsize = len(tlist)
-        self.m_vdb.add_texts(tlist,metadatas = metalist)
+        ret = self.add_texts(name,tlist,metalist)
+        if ret == False:
+            return 0
+        self.m_util.logErr("chromadbCon::add_PDF_From_Local_Dir adding document data Done")
         return tsize
     
     def getMaxTokenSizeFromST(self):
@@ -113,49 +126,37 @@ class ChromadbCon:
         except:
             return 0
         
-    def query(self, query, k : int= 2, fetch_k : int = 10):
+    def query(self, name, query, k : int= 2, fetch_k : int = 10):
         '''DB에서 검색'''
+        nowDB = self.getDB(name)
         for i in range(3):
-            if self.m_vdb == None:
-                self.m_vdb = self.loadDB()
             try:
-                res= self.m_vdb.max_marginal_relevance_search(query, k, fetch_k=fetch_k)
+                res= nowDB.max_marginal_relevance_search(query, k, fetch_k=fetch_k)
                 return res
             except:
                 self.m_util.logErr("R2_LANGCHAIN_RAG_P::query Error While Searching Failed" + str(i+1))
-        
-        for i in range(3):
-            if self.m_vdb == None:
-                self.m_vdb = self.loadDB()
-            try:
-                res= self.m_vdb.max_marginal_relevance_search(query, 1, fetch_k=fetch_k)
-                return res
-            except:
-                self.m_util.logErr("R2_LANGCHAIN_RAG_P::query Error While Searching Failed after changing Key " + str(i+1))
         return None
 
 
-def delete_data(self, ids):
-    '''데이터 삭제'''
-    try:
-        if self.m_vdb is None:
-            self.m_vdb = self.loadDB()
-        self.m_vdb._collection.delete(ids=ids)
-        return True
-    except Exception as e:
-        self.m_util.logErr(f"ChromadbCon::delete_data 오류 발생: {str(e)}")
-        return False
+    def delete_data(self, name, ids):
+        '''데이터 삭제'''
+        nowDB = self.getDB(name)
+        try:
+            nowDB._collection.delete(ids=ids)
+            return True
+        except Exception as e:
+            self.m_util.logErr(f"ChromadbCon::delete_data 오류 발생: {str(e)}")
+            return False
 
-def delete_all_data(self):
-    '''모든 데이터 삭제'''
-    try:
-        if self.m_vdb is None:
-            self.m_vdb = self.loadDB()
-        self.m_vdb._collection.delete()
-        return True
-    except Exception as e:
-        self.m_util.logErr(f"ChromadbCon::delete_all_data 오류 발생: {str(e)}")
-        return False
+    def delete_all_data(self, name):
+        '''모든 데이터 삭제'''
+        nowDB = self.getDB(name)
+        try:
+            nowDB._collection.delete()
+            return True
+        except Exception as e:
+            self.m_util.logErr(f"ChromadbCon::delete_all_data 오류 발생: {str(e)}")
+            return False
 
 if __name__ == "__main__":
     util = Util()
@@ -163,7 +164,3 @@ if __name__ == "__main__":
     temp_Model = HuggingFaceEmbeddings(model_name="jhgan/ko-sroberta-multitask")
     temp_tokenizer = AutoTokenizer.from_pretrained('jhgan/ko-sroberta-multitask')
     con = ChromadbCon(util,temp_Model, temp_tokenizer)
-    con.loadDB()
-    con.add_PDF_From_Local_Dir("D:\\anaconda\\Lib\\site-packages\\panel\\tests\\test_data\\sample.pdf")
-    res = con.query("small")
-    a=0

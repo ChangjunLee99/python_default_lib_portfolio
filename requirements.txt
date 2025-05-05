@@ -28,10 +28,8 @@ ollama
 langchain_community
 langchain_openai
 chromadb
-transformers
 langchain
 langchain_core
-TensorFlow
 langchain_huggingface
 peft
 datasets

@@ -339,19 +339,3 @@ ORDER BY ordinal_position"""
 
 
         
-
-
-if __name__ == "__main__" :
-
-    Objconf = Obj()
-    Objconf.parsesys()
-    dbcon = MariaDBCon()
-    obj = Obj() 
-    Objresult = dbcon.tbo("SHOW COLUMNS FROM tc_data_rt;")
-
-    for Objchild in Objresult.getChildArr().getArr():
-        for Objchildchild in Objchild.getChildArr().getArr():
-            name = Objchildchild.getName()
-            value = Objchildchild.getValue()
-            a = 0
-            

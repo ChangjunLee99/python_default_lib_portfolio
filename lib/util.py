@@ -58,15 +58,17 @@ class Util(Obj) :
     logging.error('This is an error message')
     logging.critical('This is a critical message')
     '''
-    def getDateTimeBuf(self):
-        now = datetime.now()
-        nowtime = now.strftime("%Y%m%d%H%M%S%f")
+    def getDateTimeBuf(self,f = None):
+        if f == None:
+            f = self.getNowTime()
+        now = datetime.fromtimestamp(f)
+        nanoseconds = int((f - int(f)) * 1_000_000_000)  # 초 단위에서 나노초 계산
+        random_digits = random.randint(0, 99)  # 00~99 사이의 랜덤 숫자 생성
+        nowtime = now.strftime("%Y%m%d%H%M%S_")+ now.strftime("%f")[:3]
         lngh = len(nowtime)
-        if lngh != 20:
-            a = 0
         for i in range(20 - lngh):
             nowtime=nowtime + '0'
-        return nowtime
+        return now.strftime("%Y%m%d%H%M%S_") + f"{nanoseconds:09d}"[:7] + f"{random_digits:02d}"
     
     def getNowTime(self):
         return time.time()
@@ -316,7 +318,7 @@ class Util(Obj) :
         return open(fpath, otype)
         
     def getNowDir(self):
-        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.dirname(os.path.abspath(__file__))
 
     # IDX 생성하여 반환
     def getCode(self):
@@ -942,97 +944,5 @@ if __name__ == "__main__":
 
     
     pu = Util()
-    pu.get_Comb_Path("D:\\","\\download\\","\\dd\\")
-    cnt = pu.get_CPU_Count()
-    total_gb, used_gb, free_gb  = pu.get_disk_usage("D:\\")
-
-    with open("D:\\test\\20231016132542839_025304120049.pdf", "rb") as f:
-        pdf_data = f.read()
-
-    print(pu.is_PDF_Data(pdf_data)) 
-    with open("D:\\test\\20231110173713963_524835J0023000RTPH_214.hwpx", "rb") as f:
-        pdf_data = f.read()
-
-    print(pu.is_PDF_Data(pdf_data)) 
-
-    pu.excute_cmd('D:\\00_SAT\\SAT.Dgcore\\sat.lib.objcore\\objcore\\window\\x64\\objr.exe -otype metaxml "D:\\test\\샘플\\obj1.docx"')
-    ret = pu.loadxmltoobj("D:\\test\\샘플\\obj1.pdf.files\\00001.xml")
-    v='''
-
-너는 원본 문서 안내원이야.
-
-너의 역할은 여러 문서 중 가장 알맞는 문서에 대한 내용을 안내하는거야.
-
-아래에 질문, 문서 이름, 탐색 된 문장, 문장의 페이지 번호, 목차 이름, 목차 시작 페이지 번호, 목차 내용을 알려 줄 거야.
-
-안내원이 정중하게 대답해 주는 것처럼 문서의 이름과 페이지 번호, 그리고 찾는 내용을 하나의 문장 안에서 명시해줘.
-그 다음 줄에는 가능하면 2 문장 이상의 적지않은 문자열로 원본 내용을 정중하게 설명해줘.
-만약 탐색된 문장이 관련이 없으면 찾는 정보가 없다는 내용과 너가 아는 정보를 자세히 답변해줘.
-
-원본 ->
-질문 : 전투기
-문서 이름 : NONB12023000000588
-탐색 된 문장 : 2018년 7월 16일, 영국 국방부는 영국 공군의 유 로파이터 타이푼(Eurofighter Typhoon) 전투기를 대체할 차세 대 전투기 템페스트(Tempest) 개발을 위한 『미래 전투 공 중체계(FCAS)(Future Combat Air System) 』 계획을 발표했다.
-페이지 번호 : 1
-목차 이름 : 일본의 영국 주도 제6세대 전투기 개
-원본 목차 시작 페이지 번호 : 1
-목차 내용 : None'''
-        
-    #ret.re.
-    if pu.regex_match("[\n\t]+", v):
-        a=0
-    if pu.regex_match("[\n\t]+","\n\n\n\n"):
-        a=0
     
-    flist = pu.getDirectoryFileList("D:\\test")
-    for fname in flist:
-        fnm = pu.get_File_Name_Without_Extension(fname)
-        print(fnm)
-    
-    ret = pu.is_Extension(r"D:\application.pdf",".PdF")
-    
-    fpath  =r"D:\application.pdf"
-    fname = pu.getFileNameFromDir(fpath)
-
-
-    res = {}
-    res["FIDX"]="11"
-    res["status"]=200
-    dat = {}
-    res["data"]=dat
-    dat["FX"]="12"
-    dat["FY"]="123"
-    resultStr = pu.getJsonDump(res)
-    print(resultStr)
-
-    temp = "http'://'"
-    if pu.isExistString("'",temp):
-        a=0
-    else:
-        b=0
-    temp = "httpp:://"
-    if pu.isExistString("'",temp):
-        a=0
-    else:
-        b=0
-    
-    dat='''{
-	"DATA": {
-		"FIDX": "1111",
-		"FDIDDO": "1234",
-		"SIM": "0.944231"
-	}
-}'''
-    res = pu.loadJsonToObj(dat)
-
-    pu.setLogDir("D:/log.log")
-    pu.logErr("테스트")
-    objxml = pu.xml_string_to_obj(xml_string)
-    obj= Obj()
-    objC = obj.addChild("FirstChild")
-    objC.setValue("안녕")
-    objC.addChild("SecondChild")
-    res =pu.getXmlStringFromObj(obj,isPretty=False)
-    res = pu.getJsonStringFromObj(obj)
-    a=0
 
