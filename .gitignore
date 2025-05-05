@@ -8,3 +8,5 @@ logs/
 *.log
 .codegpt
 /.vscode/launch.json
+*.bin
+*.sqlite

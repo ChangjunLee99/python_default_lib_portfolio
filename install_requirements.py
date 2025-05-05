@@ -4,11 +4,11 @@ import sys
 def install_requirements():
     try:
         subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'])
-        print('ëª¨ë“  íŒ¨í‚¤ì§€ê°€ ì„±ê³µì ìœ¼ë¡œ ì„¤ì¹˜ë˜ì—ˆìŠµë‹ˆë‹¤.')
+        print('¸ğµç ÆĞÅ°Áö°¡ ¼º°øÀûÀ¸·Î ¼³Ä¡µÇ¾ú½À´Ï´Ù.')
     except subprocess.CalledProcessError as e:
-        print(f'íŒ¨í‚¤ì§€ ì„¤ì¹˜ ì¤‘ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤: {e}')
+        print(f'ÆĞÅ°Áö ¼³Ä¡ Áß ¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù: {e}')
     except FileNotFoundError:
-        print('requirements.txt íŒŒì¼ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.')
+        print('requirements.txt ÆÄÀÏÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.')
 
 if __name__ == '__main__':
     install_requirements()
