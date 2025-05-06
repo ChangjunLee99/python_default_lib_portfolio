@@ -1,7 +1,5 @@
-import sys
-from os import path
-tt =path.dirname( path.dirname( path.abspath(__file__) ) )
-if not tt in sys.path : sys.path.append(tt)
+import sys;from os import path;_ = path.dirname( path.dirname( path.abspath(__file__) ) )
+if not _ in sys.path : sys.path.append(_)
 
 import inspect
 import re
@@ -32,6 +30,7 @@ from lib.Obj import Obj
 from datetime import datetime
 from time import sleep
 import time
+import logging
 
 class Util(Obj) :
     '''기본 유틸리티 클래스'''
@@ -42,22 +41,15 @@ class Util(Obj) :
         self.OIP = ''
         self.IIP=''
         self.setLogDir(str(path.dirname( path.abspath(__file__) )))
+        self.m_logger = None
         pass
+    def set_logger(self, logger:logging.Logger):
+        self.m_logger = logger
     def getNowTimeStr(self):
         now = datetime.now()
         return now.strftime("%Y-%m-%d %H:%M:%S.%f")
-    def objsleep(self, sec : int):
+    def sleep(self, sec : int):
         sleep(sec)
-    '''
-    # 로그 설정
-    logging.basicConfig(filename='example.log', level=logging.DEBUG)
-    # 로그 메시지 출력
-    logging.debug('This is a debug message')
-    logging.info('This is an info message')
-    logging.warning('This is a warning message')
-    logging.error('This is an error message')
-    logging.critical('This is a critical message')
-    '''
     def getDateTimeBuf(self,f = None):
         if f == None:
             f = self.getNowTime()
@@ -69,6 +61,7 @@ class Util(Obj) :
         for i in range(20 - lngh):
             nowtime=nowtime + '0'
         return now.strftime("%Y%m%d%H%M%S_") + f"{nanoseconds:09d}"[:7] + f"{random_digits:02d}"
+ 
     
     def getNowTime(self):
         return time.time()
@@ -318,7 +311,7 @@ class Util(Obj) :
         return open(fpath, otype)
         
     def getNowDir(self):
-        return os.path.dirname(os.path.abspath(__file__))
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     # IDX 생성하여 반환
     def getCode(self):
@@ -443,7 +436,7 @@ class Util(Obj) :
         s = self.loadFileStr(fpath)
         if s != None:
             
-            obj = self.parsexmltoobj(fpath)
+            obj = self.parseXmltoObjXCF(fpath)
             #obj = self.xml_string_to_obj(s)
             return obj
         else:
@@ -453,7 +446,7 @@ class Util(Obj) :
         s = self.loadFileStr(fpath)
         if s != None:
             
-            obj = self.parsexmltoObjXCF(fpath)
+            obj = self.parseXmltoObjXCF(fpath)
             #obj = self.xml_string_to_obj(s)
             return obj
         else:
@@ -608,15 +601,56 @@ class Util(Obj) :
             res += string
         return res
     
-    def logErr(self, string):
+    def logErr(self, string, *args, **kwargs):
         try:
             string = str(string)
-            
-            if self.isLogDirExist():
-                strlog = self.getNowTimeStr() + ":" + self.getLogName()+ " " + string
-                print(strlog)
-                strlog += "\n"
-                self.appendFileStrW(self.getLogDir(), strlog)
+            if self.m_logger != None:
+                self.m_logger.error(string, *args, **kwargs)
+            else:
+                print(string)
+        except:
+            return
+    def logInfo(self, string, *args, **kwargs):
+        try:
+            string = str(string)
+            if self.m_logger != None:
+                self.m_logger.info(string, *args, **kwargs)
+            else:
+                print(string)
+        except:
+            return
+    def logWarning(self, string, *args, **kwargs):
+        try:
+            string = str(string)
+            if self.m_logger != None:
+                self.m_logger.warning(string, *args, **kwargs)
+            else:
+                print(string)
+        except:
+            return
+    def logWarn(self, string, *args, **kwargs):
+        try:
+            string = str(string)
+            if self.m_logger != None:
+                self.m_logger.warn(string, *args, **kwargs)
+            else:
+                print(string)
+        except:
+            return
+    def logCritical(self, string, *args, **kwargs):
+        try:
+            string = str(string)
+            if self.m_logger != None:
+                self.m_logger.critical(string, *args, **kwargs)
+            else:
+                print(string)
+        except:
+            return
+    def logDebug(self, string, *args, **kwargs):
+        try:
+            string = str(string)
+            if self.m_logger != None:
+                self.m_logger.debug(string, *args, **kwargs)
             else:
                 print(string)
         except:
@@ -924,25 +958,5 @@ class FlagManager:
     
 
 if __name__ == "__main__":
-    xml_string = '''
-<root>
-    <child>
-        <grandchild>data</grandchild>
-    </child>
-</root>
-'''
-
-    # # XML 문자열을 XML 객체로 변환
-    # root = ET.fromstring(xml_string)
-
-    # # XML 객체를 사용하여 데이터 접근
-    # print(f"Root tag: {root.tag}")
-    # for child in root:
-    #     print(f"Child tag: {child.tag}")
-    #     for grandchild in child:
-    #         print(f"Grandchild tag: {grandchild.tag}, text: {grandchild.text}")
-
     
     pu = Util()
-    
-

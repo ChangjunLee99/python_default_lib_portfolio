@@ -1,6 +1,5 @@
-import sys;from os import path
-tt = path.dirname( path.dirname( path.abspath(__file__) ) )
-if not tt in sys.path : sys.path.append(tt)
+import sys;from os import path;_ = path.dirname( path.dirname( path.abspath(__file__) ) )
+if not _ in sys.path : sys.path.append(_)
 
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -13,7 +12,7 @@ from lib.util import *
 
 class logger:
     '''log 출력 클래스'''
-    def __init__(self, util:Util, name, level=logging.DEBUG, isQueueing=True, isStreaming = True):
+    def __init__(self, util:Util, name, level=logging.DEBUG, isQueueing=False, isStreaming = True):
         self.q : queue.Queue = None 
         self.listener : QueueListener = None
         
@@ -22,14 +21,13 @@ class logger:
         if len(self.logger.handlers) > 0:
             return
         
-        config = json.load(open(util.getValueStr('LogConfPath')))
-        log_dir = config["log_dir"]
-        
-        if not os.path.exists(log_dir):
-            os.makedirs(log_dir)
         current_date=datetime.now().strftime("%Y-%m-%d")
-        log_file_path = os.path.join(log_dir, f"{name}_{current_date}.log")
-
+        conf = util.findChild("CONF")
+        if conf != None:
+            log_file_path = os.path.join(conf.getValueStr('LOG_PATH'), f"{name}_{current_date}.log")
+        else:
+            log_file_path = os.path.join("/log/",f"{name}_{current_date}.log")
+        util.makeDirPath(log_file_path)
         handlers=[]
 
 
